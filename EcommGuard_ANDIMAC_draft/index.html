@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -82,10 +83,24 @@
     break-inside:avoid; -webkit-column-break-inside:avoid; margin-bottom:24px; display:inline-block; width:100%;
   }
   @media(max-width:1000px){ .grid5{column-count:1;} }
-  /* Cuadro General 2 tiene solo 2 categorías: se muestran siempre lado a lado, no en masonry */
-  #grid-general2{display:grid; grid-template-columns:1fr 1fr; column-count:unset; gap:24px;}
-  #grid-general2 .card{break-inside:auto; margin-bottom:0; display:block;}
-  @media(max-width:900px){ #grid-general2{grid-template-columns:1fr;} }
+  /* Bloques con solo 2 categorias: se muestran siempre lado a lado, no en masonry */
+  .grid-2fixed{display:grid; grid-template-columns:1fr 1fr; column-count:unset; gap:24px;}
+  .grid-2fixed .card{break-inside:auto; margin-bottom:0; display:block;}
+  @media(max-width:900px){ .grid-2fixed{grid-template-columns:1fr;} }
+
+  /* CUADRO DE MANDO GLOBAL: 3 botones en fila + panel de contenido */
+  .acc-tabs{display:flex; gap:14px; margin-bottom:24px; flex-wrap:wrap;}
+  .acc-tab-btn{
+    flex:1; min-width:200px; background:#fff; border:1.5px solid var(--line); border-radius:10px;
+    padding:18px 20px; font-family:'Fraunces', serif; font-weight:500; font-size:17px;
+    color:var(--teal-deep); cursor:pointer; text-align:left; transition:all .15s ease;
+  }
+  .acc-tab-btn.active{background:var(--teal); color:#fff; border-color:var(--teal);}
+  .acc-tab-btn:not(.active):hover{border-color:var(--turq);}
+  .acc-panel{display:none;}
+  .acc-panel.active{display:block;}
+  #grid-construccion{column-count:1;}
+  #grid-construccion .card{width:100%;}
   .card-top{margin-bottom:14px;}
   .cat-eyebrow{font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; margin:0;}
   .cat-title{font-family:'Fraunces', serif; font-weight:500; font-size:19px; margin:1px 0 0; color:var(--teal-deep);}
@@ -170,25 +185,32 @@
   </div>
 
   <nav>
-    <button class="tab-btn active" data-view="general1">Cuadro general (1/2)</button>
-    <button class="tab-btn" data-view="general2">Cuadro general (2/2)</button>
+    <button class="tab-btn active" data-view="global">Cuadro de mando global</button>
     <button class="tab-btn" data-view="vivienda">Vivienda iniciada</button>
     <button class="tab-btn" data-view="ventas">Ventas construcción</button>
     <button class="tab-btn" data-view="arbol">Árbol Ecommguard</button>
   </nav>
 
-  <!-- VIEW 1a: GENERAL (A, B, C) -->
-  <div class="view active" id="view-general1">
-    <h2 class="section-title"><span class="chev">&lt;</span>Cuadro de mando general — Económico, Industrial y Construcción</h2>
-    <p class="section-sub">Ratio absoluto y tasa/variación interanual. Escala: Nacional. (1 de 2)</p>
-    <div class="grid5" id="grid-general1"></div>
-  </div>
+  <!-- VIEW GLOBAL: 3 bloques de Ratios, botones en fila -->
+  <div class="view active" id="view-global">
+    <h2 class="section-title"><span class="chev">&lt;</span>Cuadro de mando global</h2>
+    <p class="section-sub">Ratio absoluto y tasa/variación interanual. Escala: Nacional. Haz clic en cada bloque para ver el detalle.</p>
 
-  <!-- VIEW 1b: GENERAL (D, E) -->
-  <div class="view" id="view-general2">
-    <h2 class="section-title"><span class="chev">&lt;</span>Cuadro de mando general — Reforma y Consumo, Actividad Comercial</h2>
-    <p class="section-sub">Ratio absoluto y tasa/variación interanual. Escala: Nacional. (2 de 2)</p>
-    <div class="grid5" id="grid-general2"></div>
+    <div class="acc-tabs">
+      <button class="acc-tab-btn active" data-block="economicos">Ratios Económicos</button>
+      <button class="acc-tab-btn" data-block="construccion">Ratios Construcción</button>
+      <button class="acc-tab-btn" data-block="consumo">Ratios Consumo y Comercio</button>
+    </div>
+
+    <div class="acc-panel active" id="panel-economicos">
+      <div class="grid5 grid-2fixed" id="grid-economicos"></div>
+    </div>
+    <div class="acc-panel" id="panel-construccion">
+      <div class="grid5" id="grid-construccion"></div>
+    </div>
+    <div class="acc-panel" id="panel-consumo">
+      <div class="grid5 grid-2fixed" id="grid-consumo"></div>
+    </div>
   </div>
 
   <!-- VIEW 2: VIVIENDA INICIADA -->
@@ -289,13 +311,14 @@ function ultimos5Anios(serie){
   return serie.slice(-n);
 }
 
-// ---------- VIEW 1: GENERAL (dividida en dos pantallas) ----------
+// ---------- CUADRO DE MANDO GLOBAL (3 bloques desplegables) ----------
 try {
 const catColors = {A:'#386369', B:'#66c2cf', C:'#f0a94f', D:'#3e8574', E:'#2b4d52'};
 const fmtNum = (v) => new Intl.NumberFormat('es-ES').format(v);
 const grids = {
-  A: document.getElementById('grid-general1'), B: document.getElementById('grid-general1'), C: document.getElementById('grid-general1'),
-  D: document.getElementById('grid-general2'), E: document.getElementById('grid-general2'),
+  A: document.getElementById('grid-economicos'), B: document.getElementById('grid-economicos'),
+  C: document.getElementById('grid-construccion'),
+  D: document.getElementById('grid-consumo'), E: document.getElementById('grid-consumo'),
 };
 Object.entries(DATA.categorias).forEach(([key, cat])=>{
   const card = document.createElement('div');
@@ -346,7 +369,23 @@ Object.entries(DATA.categorias).forEach(([key, cat])=>{
     sparkline(`spark-${key}-${i}`, serie, catColors[key], unitSuffix, k.nombre, !esInteranual);
   });
 });
-} catch(e) { console.error('Error en Cuadro General:', e); }
+// Botones "Ratios Económicos / Construcción / Consumo y Comercio": al mostrar un panel
+// que estaba oculto (display:none), las graficas que contiene se crearon con ancho 0;
+// forzamos un resize de Chart.js en ese momento para que se ajusten bien.
+document.querySelectorAll('.acc-tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.acc-tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.acc-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    const panel = document.getElementById('panel-'+btn.dataset.block);
+    panel.classList.add('active');
+    panel.querySelectorAll('canvas').forEach(cv=>{
+      const inst = Chart.getChart(cv);
+      if(inst) inst.resize();
+    });
+  });
+});
+} catch(e) { console.error('Error en Cuadro de mando global:', e); }
 
 // ---------- VIEW 2: VIVIENDA INICIADA ----------
 try {
