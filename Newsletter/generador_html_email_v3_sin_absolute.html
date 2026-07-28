@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Generador de HTML para email - Producto y Banner/Footer (sin position:absolute)</title>
+<title>Generador de HTML para email - Producto (con logo) y Banner/Footer</title>
 <style>
   body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 24px; color: #222; }
   .wrap { max-width: 780px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 24px 28px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
@@ -23,6 +23,8 @@
   button { background: #2c2c2a; color: #fff; border: none; border-radius: 4px; padding: 10px 16px; font-size: 14px; cursor: pointer; width: 100%; }
   button:hover { background: #444; }
   button.secondary { background: #eee; color: #222; border: 1px solid #ccc; margin-bottom: 14px; }
+  .toggleBtn { flex: 1; padding: 8px; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; font-size: 12px; background: #eee; color: #222; width: auto; margin-bottom: 0; }
+  .toggleBtn.active { background: #2c2c2a; color: #fff; }
   .copyMsg { font-size: 13px; color: #1a7f37; min-height: 18px; margin: 8px 0 0; }
   textarea { width: 100%; height: 230px; font-family: monospace; font-size: 11px; margin-top: 10px; box-sizing: border-box; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
   h2.section { font-size: 14px; color: #666; margin: 0 0 8px; font-weight: normal; }
@@ -37,7 +39,7 @@
 <div class="wrap">
   <h1>Generador de código HTML para email (Connectif)</h1>
   <p class="sub">Elige la plantilla, rellena los campos, revisa la vista previa y copia el código final.</p>
-  <p class="ok">✅ Versión sin <code>position: absolute</code>: la imagen se usa como fondo de una celda de tabla y el texto va dentro de esa misma celda, así que se superpone de forma fiable en Gmail, Apple Mail, Outlook.com y apps móviles.</p>
+  <p class="ok">✅ Sin <code>position: absolute</code>: la imagen es el fondo de una celda de tabla y el texto va dentro, superponiéndose de forma fiable en Gmail, Apple Mail, Outlook.com y apps móviles.</p>
 
   <div class="tabs">
     <button class="tabBtn active" id="tabProducto" onclick="switchTab('producto')">Plantilla producto</button>
@@ -66,24 +68,71 @@
 
     <fieldset>
       <legend>Cabecera de marca (arriba)</legend>
-      <div class="row">
-        <div>
-          <label for="p_brandName">Marca</label>
-          <input type="text" id="p_brandName" value="BENITO">
-        </div>
-        <div>
-          <label for="p_brandSize">Tamaño (px)</label>
-          <input type="number" id="p_brandSize" value="28" min="10" max="60">
+
+      <div class="row" style="margin-bottom:12px;">
+        <button type="button" class="toggleBtn active" id="p_brandTypeTextBtn" onclick="setBrandType('text')">Texto</button>
+        <button type="button" class="toggleBtn" id="p_brandTypeImgBtn" onclick="setBrandType('image')">Imagen (logo)</button>
+      </div>
+
+      <div id="p_brandTextFields">
+        <div class="row">
+          <div>
+            <label for="p_brandName">Marca</label>
+            <input type="text" id="p_brandName" value="BENITO">
+          </div>
+          <div>
+            <label for="p_brandSize">Tamaño (px)</label>
+            <input type="number" id="p_brandSize" value="28" min="10" max="60">
+          </div>
         </div>
       </div>
+
+      <div id="p_brandImgFields" style="display:none;">
+        <label for="p_brandImgUrl">URL del logo</label>
+        <input type="text" id="p_brandImgUrl" placeholder="https://..." value="" oninput="onLogoUrlChange()" onchange="onLogoUrlChange()">
+
+        <label style="display:flex; align-items:center; gap:6px; margin-bottom:12px; cursor:pointer; font-weight:normal;">
+          <input type="checkbox" id="p_brandImgKeepRatio" checked style="width:auto; margin:0;">
+          Mantener proporción original (recomendado)
+        </label>
+
+        <div class="row">
+          <div>
+            <label for="p_brandImgWidth">Ancho del logo (px)</label>
+            <input type="number" id="p_brandImgWidth" value="140" min="20" max="500">
+          </div>
+          <div id="p_brandImgHeightWrap">
+            <label for="p_brandImgHeight">Alto del logo (px)</label>
+            <input type="number" id="p_brandImgHeight" value="40" min="10" max="300">
+          </div>
+        </div>
+        <p class="hint" id="p_ratioHint" style="margin-top:-8px;"></p>
+        <label for="p_brandImgAlt">Texto alternativo (alt)</label>
+        <input type="text" id="p_brandImgAlt" value="Logo">
+      </div>
+
       <div class="row">
         <div>
-          <label for="p_brandTagline">Subtítulo</label>
+          <label for="p_brandTagline">Subtítulo (solo si marca es texto)</label>
           <input type="text" id="p_brandTagline" value="Light  Urban  Play  Covers">
         </div>
         <div>
           <label for="p_taglineSize">Tamaño (px)</label>
           <input type="number" id="p_taglineSize" value="12" min="6" max="30">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="p_brandPosH">Alineación de la cabecera</label>
+          <select id="p_brandPosH">
+            <option value="left">Izquierda</option>
+            <option value="center" selected>Centro</option>
+            <option value="right">Derecha</option>
+          </select>
+        </div>
+        <div>
+          <label for="p_brandMarginH">Margen lateral (si izq/der, px)</label>
+          <input type="number" id="p_brandMarginH" value="25" min="0" max="150">
         </div>
       </div>
       <label for="p_brandMarginTop">Margen superior de la cabecera (px)</label>
@@ -94,17 +143,17 @@
       <legend>Espaciador (separa cabecera del bloque principal)</legend>
       <label for="p_spacerHeight">Altura del espacio intermedio (px)</label>
       <input type="number" id="p_spacerHeight" value="260" min="0" max="800">
-      <p class="hint">Ajusta este valor para que el bloque principal caiga visualmente donde quieres dentro de la imagen. Súbelo para bajar el texto, bájalo para subirlo.</p>
+      <p class="hint">Ajusta este valor para que el bloque principal caiga visualmente donde quieres dentro de la imagen.</p>
     </fieldset>
 
     <fieldset>
       <legend>Bloque principal (abajo)</legend>
-      <label for="p_line1">Línea 1 · itálica</label>
-      <input type="text" id="p_line1" value="luminaria">
+      <label for="p_line1">Línea 1 · itálica (opcional)</label>
+      <input type="text" id="p_line1" value="" placeholder="ej. luminaria (déjalo vacío si no aplica)">
       <label for="p_line2">Línea 2 · negrita mayúsculas</label>
-      <input type="text" id="p_line2" value="MILAN SOLAR">
+      <input type="text" id="p_line2" value="TAPAS y REJAS">
       <label for="p_line3">Línea 3 · descripción</label>
-      <input type="text" id="p_line3" value="Luminaria solar autónoma lista para funcionar sin conexión eléctrica.">
+      <input type="text" id="p_line3" value="Stock permanente, servicio rápido y fiable.">
       <div class="row">
         <div>
           <label for="p_size1">Tamaño línea 1 (px)</label>
@@ -122,18 +171,32 @@
       <div class="row">
         <div>
           <label for="p_textColor">Color del texto</label>
-          <input type="color" id="p_textColor" value="#000000">
+          <input type="color" id="p_textColor" value="#ffffff">
         </div>
         <div>
           <label for="p_marginBottom">Margen inferior tras el bloque (px)</label>
           <input type="number" id="p_marginBottom" value="30" min="0" max="200">
         </div>
       </div>
+      <div class="row">
+        <div>
+          <label for="p_mainPosH">Alineación del bloque principal</label>
+          <select id="p_mainPosH">
+            <option value="left" selected>Izquierda</option>
+            <option value="center">Centro</option>
+            <option value="right">Derecha</option>
+          </select>
+        </div>
+        <div>
+          <label for="p_mainMarginH">Margen lateral (si izq/der, px)</label>
+          <input type="number" id="p_mainMarginH" value="25" min="0" max="150">
+        </div>
+      </div>
     </fieldset>
 
     <fieldset>
       <legend>📱 Adaptación móvil</legend>
-      <label for="p_mobileScale">Escala en móvil (%) — se aplica a tamaños, alto de imagen y espaciador</label>
+      <label for="p_mobileScale">Escala en móvil (%) — se aplica a tamaños, alto de imagen, logo y espaciador</label>
       <input type="number" id="p_mobileScale" value="70" min="30" max="100">
     </fieldset>
 
@@ -143,6 +206,7 @@
     <div class="preview-box">
       <div class="previewWrap" id="p_previewWrap">
         <div id="p_brandRow" style="text-align:center;">
+          <img id="p_brandImgPreview" style="display:none; margin:0 auto;" alt="">
           <div id="p_pBrand" style="font-weight:bold; letter-spacing:2px; font-family:'Proxima Nova', Arial, Helvetica, sans-serif;"></div>
           <div id="p_pTagline" style="letter-spacing:2px; font-family:'Proxima Nova', Arial, Helvetica, sans-serif; margin-top:4px;"></div>
         </div>
@@ -183,8 +247,14 @@
     <input type="text" id="f_headline1" value="EXPERTOS EN">
     <label for="f_headline2">Titular · línea 2</label>
     <input type="text" id="f_headline2" value="ILUMINACIÓN EFICIENTE">
-    <label for="f_urlLine">Línea URL / CTA</label>
-    <input type="text" id="f_urlLine" value="www.benito.com">
+
+    <fieldset>
+      <legend>Línea CTA / URL</legend>
+      <label for="f_urlLine">Texto visible</label>
+      <input type="text" id="f_urlLine" value="www.benito.com">
+      <label for="f_urlHref">Enlace de destino (a dónde lleva al hacer clic)</label>
+      <input type="text" id="f_urlHref" value="https://www.benito.com">
+    </fieldset>
 
     <div class="row">
       <div>
@@ -241,12 +311,40 @@
 <script>
 var FONT_SCRIPT = "'IvyPresto Display', Georgia, 'Times New Roman', serif";
 var FONT_SANS = "'Proxima Nova', Arial, Helvetica, sans-serif";
+var brandType = 'text';
+var naturalRatio = null; // height/width of loaded logo
+
+function onLogoUrlChange(){
+  var url = document.getElementById('p_brandImgUrl').value.trim();
+  if (!url) { naturalRatio = null; buildProducto(); return; }
+  var probe = new Image();
+  probe.onload = function(){
+    naturalRatio = probe.naturalHeight / probe.naturalWidth;
+    var w = parseInt(document.getElementById('p_brandImgWidth').value, 10) || 140;
+    if (document.getElementById('p_brandImgKeepRatio').checked) {
+      document.getElementById('p_brandImgHeight').value = Math.round(w * naturalRatio);
+    }
+    document.getElementById('p_ratioHint').textContent = 'Proporción detectada: ' + probe.naturalWidth + '×' + probe.naturalHeight + 'px';
+    buildProducto();
+  };
+  probe.onerror = function(){ naturalRatio = null; buildProducto(); };
+  probe.src = url;
+}
 
 function switchTab(tab){
   document.getElementById('panelProducto').classList.toggle('active', tab === 'producto');
   document.getElementById('panelFooter').classList.toggle('active', tab === 'footer');
   document.getElementById('tabProducto').classList.toggle('active', tab === 'producto');
   document.getElementById('tabFooter').classList.toggle('active', tab === 'footer');
+}
+
+function setBrandType(type){
+  brandType = type;
+  document.getElementById('p_brandTextFields').style.display = type === 'text' ? 'block' : 'none';
+  document.getElementById('p_brandImgFields').style.display = type === 'image' ? 'block' : 'none';
+  document.getElementById('p_brandTypeTextBtn').classList.toggle('active', type === 'text');
+  document.getElementById('p_brandTypeImgBtn').classList.toggle('active', type === 'image');
+  buildProducto();
 }
 
 function copyText(taId, msgId){
@@ -259,16 +357,41 @@ function copyText(taId, msgId){
 }
 
 /* ---------------- PRODUCTO ---------------- */
+function padFor(align, marginH){
+  if (align === 'left') return '0px 0px 0px ' + marginH + 'px';
+  if (align === 'right') return '0px ' + marginH + 'px 0px 0px';
+  return '0px';
+}
+
 function buildProducto(){
   var url = document.getElementById('p_imgUrl').value.trim() || 'URL_DE_LA_IMAGEN';
   var tid = (document.getElementById('p_templateId').value.trim() || 'plantilla').replace(/[^a-zA-Z0-9_-]/g, '');
   var imgHeight = parseInt(document.getElementById('p_imgHeight').value, 10) || 600;
   var bgFallback = document.getElementById('p_bgFallback').value;
+
   var brand = document.getElementById('p_brandName').value;
   var tagline = document.getElementById('p_brandTagline').value;
   var brandSize = parseInt(document.getElementById('p_brandSize').value, 10) || 28;
   var taglineSize = parseInt(document.getElementById('p_taglineSize').value, 10) || 12;
   var brandMarginTop = parseInt(document.getElementById('p_brandMarginTop').value, 10) || 0;
+  var brandPosH = document.getElementById('p_brandPosH').value;
+  var brandMarginH = parseInt(document.getElementById('p_brandMarginH').value, 10) || 0;
+
+  var brandImgUrl = document.getElementById('p_brandImgUrl').value.trim();
+  var keepRatio = document.getElementById('p_brandImgKeepRatio').checked;
+  var brandImgWidth = parseInt(document.getElementById('p_brandImgWidth').value, 10) || 140;
+  var brandImgHeightInput = parseInt(document.getElementById('p_brandImgHeight').value, 10) || 40;
+  var brandImgAlt = document.getElementById('p_brandImgAlt').value || 'Logo';
+
+  document.getElementById('p_brandImgHeightWrap').style.opacity = keepRatio ? '0.5' : '1';
+  document.getElementById('p_brandImgHeight').disabled = keepRatio;
+
+  var brandImgHeight = brandImgHeightInput;
+  if (keepRatio && naturalRatio) {
+    brandImgHeight = Math.round(brandImgWidth * naturalRatio);
+    document.getElementById('p_brandImgHeight').value = brandImgHeight;
+  }
+
   var spacerHeight = parseInt(document.getElementById('p_spacerHeight').value, 10) || 0;
   var l1 = document.getElementById('p_line1').value;
   var l2 = document.getElementById('p_line2').value;
@@ -277,24 +400,56 @@ function buildProducto(){
   var s2 = parseInt(document.getElementById('p_size2').value, 10) || 48;
   var s3 = parseInt(document.getElementById('p_size3').value, 10) || 16;
   var color = document.getElementById('p_textColor').value;
+  var mainPosH = document.getElementById('p_mainPosH').value;
+  var mainMarginH = parseInt(document.getElementById('p_mainMarginH').value, 10) || 0;
   var marginBottom = parseInt(document.getElementById('p_marginBottom').value, 10) || 0;
   var scale = (parseInt(document.getElementById('p_mobileScale').value, 10) || 70) / 100;
   function m(v){ return Math.round(v * scale); }
 
   var cImgCell = 'cn-' + tid + '-imgcell';
   var cBrand = 'cn-' + tid + '-brand';
+  var cBrandLogo = 'cn-' + tid + '-brandlogo';
   var cTagline = 'cn-' + tid + '-tagline';
   var cSpacer = 'cn-' + tid + '-spacer';
   var cLine1 = 'cn-' + tid + '-line1';
   var cLine2 = 'cn-' + tid + '-line2';
   var cLine3 = 'cn-' + tid + '-line3';
 
+  var brandPadTop = brandMarginTop + 'px ' + (brandPosH==='right'?brandMarginH:0) + 'px 0px ' + (brandPosH==='left'?brandMarginH:0) + 'px';
+  var mainPad = '0px ' + (mainPosH==='right'?mainMarginH:0) + 'px ' + marginBottom + 'px ' + (mainPosH==='left'?mainMarginH:0) + 'px';
+
+  var l1Html = l1 ? ('<div class="' + cLine1 + '" style="font-family: ' + FONT_SCRIPT + '; font-style: italic; font-size: ' + s1 + 'px; color: ' + color + ';">' + l1 + '</div>\n') : '';
+  var l1HtmlMso = l1 ? ('<div style="font-family: ' + FONT_SCRIPT + '; font-style: italic; font-size: ' + s1 + 'px; color: ' + color + ';">' + l1 + '</div>\n') : '';
+
+  var mobileLogoHeight = keepRatio ? Math.round(m(brandImgWidth) * (naturalRatio || (brandImgHeight/brandImgWidth))) : m(brandImgHeight);
+
+  var brandMarkup, brandMarkupMobileCss;
+  if (brandType === 'image' && brandImgUrl) {
+    var heightStyle = keepRatio ? 'height:auto;' : ('height:' + brandImgHeight + 'px;');
+    brandMarkup = '<img src="' + brandImgUrl + '" width="' + brandImgWidth + '" alt="' + brandImgAlt + '" class="' + cBrandLogo + '" style="display:block; width:' + brandImgWidth + 'px; ' + heightStyle + ' border:0; max-width:100%;" />';
+    brandMarkupMobileCss = '  .' + cBrandLogo + ' { width: ' + m(brandImgWidth) + 'px !important; ' + (keepRatio ? 'height:auto !important;' : ('height: ' + mobileLogoHeight + 'px !important;')) + ' }\n';
+  } else {
+    brandMarkup = '<div class="' + cBrand + '" style="font-family: ' + FONT_SANS + '; font-weight: bold; letter-spacing: 2px; font-size: ' + brandSize + 'px; color: ' + color + ';">' + brand + '</div>\n' +
+'<div class="' + cTagline + '" style="font-family: ' + FONT_SANS + '; letter-spacing: 2px; font-size: ' + taglineSize + 'px; color: ' + color + '; margin-top: 4px;">' + tagline + '</div>';
+    brandMarkupMobileCss = '  .' + cBrand + ' { font-size: ' + m(brandSize) + 'px !important; }\n' +
+'  .' + cTagline + ' { font-size: ' + m(taglineSize) + 'px !important; }\n';
+  }
+
+  var brandMarkupMso;
+  if (brandType === 'image' && brandImgUrl) {
+    brandMarkupMso = keepRatio
+      ? '<img src="' + brandImgUrl + '" width="' + brandImgWidth + '" alt="' + brandImgAlt + '" style="display:block; border:0;" />'
+      : '<img src="' + brandImgUrl + '" width="' + brandImgWidth + '" height="' + brandImgHeight + '" alt="' + brandImgAlt + '" style="display:block; border:0;" />';
+  } else {
+    brandMarkupMso = '<div style="font-family: ' + FONT_SANS + '; font-weight: bold; letter-spacing: 2px; font-size: ' + brandSize + 'px; color: ' + color + ';">' + brand + '</div>\n' +
+'<div style="font-family: ' + FONT_SANS + '; letter-spacing: 2px; font-size: ' + taglineSize + 'px; color: ' + color + '; margin-top: 4px;">' + tagline + '</div>';
+  }
+
   var styleBlock = '<style>\n@media only screen and (max-width: 600px) {\n' +
 '  .' + cImgCell + ' { height: ' + m(imgHeight) + 'px !important; }\n' +
-'  .' + cBrand + ' { font-size: ' + m(brandSize) + 'px !important; }\n' +
-'  .' + cTagline + ' { font-size: ' + m(taglineSize) + 'px !important; }\n' +
+brandMarkupMobileCss +
 '  .' + cSpacer + ' { height: ' + m(spacerHeight) + 'px !important; line-height: ' + m(spacerHeight) + 'px !important; }\n' +
-'  .' + cLine1 + ' { font-size: ' + m(s1) + 'px !important; }\n' +
+(l1 ? ('  .' + cLine1 + ' { font-size: ' + m(s1) + 'px !important; }\n') : '') +
 '  .' + cLine2 + ' { font-size: ' + m(s2) + 'px !important; }\n' +
 '  .' + cLine3 + ' { font-size: ' + m(s3) + 'px !important; }\n' +
 '}\n</style>\n';
@@ -308,12 +463,11 @@ function buildProducto(){
 '<v:fill type="frame" src="' + url + '" color="' + bgFallback + '" />\n' +
 '<v:textbox inset="0,0,0,0">\n' +
 '<table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0">\n' +
-'<tr><td valign="top" align="center" style="padding: ' + brandMarginTop + 'px 0px 0px 0px;">\n' +
-'<div style="font-family: ' + FONT_SANS + '; font-weight: bold; letter-spacing: 2px; font-size: ' + brandSize + 'px; color: ' + color + ';">' + brand + '</div>\n' +
-'<div style="font-family: ' + FONT_SANS + '; letter-spacing: 2px; font-size: ' + taglineSize + 'px; color: ' + color + '; margin-top: 4px;">' + tagline + '</div>\n' +
+'<tr><td valign="top" align="' + brandPosH + '" style="padding: ' + brandPadTop + ';">\n' +
+brandMarkupMso + '\n' +
 '</td></tr>\n' +
-'<tr><td valign="bottom" align="center" style="padding: 0px 0px ' + marginBottom + 'px 0px;">\n' +
-'<div style="font-family: ' + FONT_SCRIPT + '; font-style: italic; font-size: ' + s1 + 'px; color: ' + color + ';">' + l1 + '</div>\n' +
+'<tr><td valign="bottom" align="' + mainPosH + '" style="padding: ' + mainPad + ';">\n' +
+l1HtmlMso +
 '<div style="font-family: ' + FONT_SANS + '; font-weight: bold; text-transform: uppercase; font-size: ' + s2 + 'px; color: ' + color + '; line-height: 1.1;">' + l2 + '</div>\n' +
 '<div style="font-family: ' + FONT_SANS + '; font-size: ' + s3 + 'px; color: ' + color + '; margin-top: 8px;">' + l3 + '</div>\n' +
 '</td></tr>\n' +
@@ -325,13 +479,12 @@ function buildProducto(){
 '<!--[if !mso]><!-->\n' +
 '<td class="' + cImgCell + '" align="center" valign="top" background="' + url + '" bgcolor="' + bgFallback + '" style="background-image:url(\'' + url + '\'); background-size:cover; background-position:center top; background-repeat:no-repeat; width:100%; height:' + imgHeight + 'px;">\n' +
 '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">\n' +
-'<tr><td align="center" style="padding: ' + brandMarginTop + 'px 0px 0px 0px;">\n' +
-'<div class="' + cBrand + '" style="font-family: ' + FONT_SANS + '; font-weight: bold; letter-spacing: 2px; font-size: ' + brandSize + 'px; color: ' + color + ';">' + brand + '</div>\n' +
-'<div class="' + cTagline + '" style="font-family: ' + FONT_SANS + '; letter-spacing: 2px; font-size: ' + taglineSize + 'px; color: ' + color + '; margin-top: 4px;">' + tagline + '</div>\n' +
+'<tr><td align="' + brandPosH + '" style="padding: ' + brandPadTop + ';">\n' +
+brandMarkup + '\n' +
 '</td></tr>\n' +
 '<tr><td class="' + cSpacer + '" height="' + spacerHeight + '" style="height:' + spacerHeight + 'px; line-height:' + spacerHeight + 'px; font-size:1px;">&nbsp;</td></tr>\n' +
-'<tr><td align="center" style="padding: 0px 0px ' + marginBottom + 'px 0px;">\n' +
-'<div class="' + cLine1 + '" style="font-family: ' + FONT_SCRIPT + '; font-style: italic; font-size: ' + s1 + 'px; color: ' + color + ';">' + l1 + '</div>\n' +
+'<tr><td align="' + mainPosH + '" style="padding: ' + mainPad + ';">\n' +
+l1Html +
 '<div class="' + cLine2 + '" style="font-family: ' + FONT_SANS + '; font-weight: bold; text-transform: uppercase; font-size: ' + s2 + 'px; color: ' + color + '; line-height: 1.1;">' + l2 + '</div>\n' +
 '<div class="' + cLine3 + '" style="font-family: ' + FONT_SANS + '; font-size: ' + s3 + 'px; color: ' + color + '; margin-top: 8px;">' + l3 + '</div>\n' +
 '</td></tr>\n' +
@@ -348,17 +501,43 @@ function buildProducto(){
   wrap.style.minHeight = imgHeight + 'px';
   wrap.style.backgroundColor = bgFallback;
 
+  var brandRow = document.getElementById('p_brandRow');
+  brandRow.style.textAlign = brandPosH;
+  brandRow.style.paddingTop = brandMarginTop + 'px';
+  brandRow.style.paddingLeft = (brandPosH==='left' ? brandMarginH : 0) + 'px';
+  brandRow.style.paddingRight = (brandPosH==='right' ? brandMarginH : 0) + 'px';
+
+  var imgPrev = document.getElementById('p_brandImgPreview');
+  if (brandType === 'image' && brandImgUrl) {
+    imgPrev.src = brandImgUrl;
+    imgPrev.style.display = 'inline-block';
+    imgPrev.style.width = brandImgWidth + 'px';
+    imgPrev.style.height = keepRatio ? 'auto' : (brandImgHeight + 'px');
+    document.getElementById('p_pBrand').style.display = 'none';
+    document.getElementById('p_pTagline').style.display = 'none';
+  } else {
+    imgPrev.style.display = 'none';
+    document.getElementById('p_pBrand').style.display = 'block';
+    document.getElementById('p_pTagline').style.display = 'block';
+  }
+
   document.getElementById('p_pBrand').textContent = brand;
   document.getElementById('p_pBrand').style.fontSize = brandSize + 'px';
   document.getElementById('p_pBrand').style.color = color;
   document.getElementById('p_pTagline').textContent = tagline;
   document.getElementById('p_pTagline').style.fontSize = taglineSize + 'px';
   document.getElementById('p_pTagline').style.color = color;
-  document.getElementById('p_brandRow').style.paddingTop = brandMarginTop + 'px';
 
   document.getElementById('p_spacerRow').style.height = spacerHeight + 'px';
 
+  var mainRow = document.getElementById('p_mainRow');
+  mainRow.style.textAlign = mainPosH;
+  mainRow.style.paddingBottom = marginBottom + 'px';
+  mainRow.style.paddingLeft = (mainPosH==='left' ? mainMarginH : 0) + 'px';
+  mainRow.style.paddingRight = (mainPosH==='right' ? mainMarginH : 0) + 'px';
+
   document.getElementById('p_pLine1').textContent = l1;
+  document.getElementById('p_pLine1').style.display = l1 ? 'block' : 'none';
   document.getElementById('p_pLine1').style.fontSize = s1 + 'px';
   document.getElementById('p_pLine1').style.color = color;
   document.getElementById('p_pLine2').textContent = l2;
@@ -368,7 +547,6 @@ function buildProducto(){
   document.getElementById('p_pLine3').textContent = l3;
   document.getElementById('p_pLine3').style.fontSize = s3 + 'px';
   document.getElementById('p_pLine3').style.color = color;
-  document.getElementById('p_mainRow').style.paddingBottom = marginBottom + 'px';
 }
 
 /* ---------------- FOOTER / BANNER ---------------- */
@@ -379,6 +557,7 @@ function buildFooter(){
   var h1 = document.getElementById('f_headline1').value;
   var h2 = document.getElementById('f_headline2').value;
   var urlLine = document.getElementById('f_urlLine').value;
+  var urlHref = document.getElementById('f_urlHref').value.trim() || '#';
   var hSize = parseInt(document.getElementById('f_headlineSize').value, 10) || 30;
   var uSize = parseInt(document.getElementById('f_urlSize').value, 10) || 18;
   var color = document.getElementById('f_textColor').value;
@@ -390,11 +569,16 @@ function buildFooter(){
   var cH = 'cn-' + tid + '-headline';
   var cU = 'cn-' + tid + '-url';
 
+  var ctaMarkup = '<a href="' + urlHref + '" target="_blank" class="cn-' + tid + '-cta" style="text-decoration:none !important; color:' + color + ' !important;">' +
+'<span class="' + cU + '" style="text-decoration:none !important; color:' + color + ' !important; font-family: ' + font + '; font-weight: bold; font-size: ' + uSize + 'px;">' + urlLine + '</span></a>';
+
   var styleBlock = '<style>\n@media only screen and (max-width: 600px) {\n' +
 '  .' + cImgCell + ' { height: ' + m(imgHeight) + 'px !important; }\n' +
 '  .' + cH + ' { font-size: ' + m(hSize) + 'px !important; }\n' +
 '  .' + cU + ' { font-size: ' + m(uSize) + 'px !important; }\n' +
-'}\n</style>\n';
+'}\n' +
+'a.cn-' + tid + '-cta, a.cn-' + tid + '-cta span { color: ' + color + ' !important; text-decoration: none !important; }\n' +
+'</style>\n';
 
   var code = styleBlock +
 '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;margin:0 auto;">\n' +
@@ -407,7 +591,7 @@ function buildFooter(){
 '<table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0"><tr><td valign="middle" align="center">\n' +
 '<div style="font-family: ' + font + '; font-weight: bold; text-transform: uppercase; font-size: ' + hSize + 'px; color: ' + color + '; line-height: 1.25;">' + h1 + '</div>\n' +
 '<div style="font-family: ' + font + '; font-weight: bold; text-transform: uppercase; font-size: ' + hSize + 'px; color: ' + color + '; line-height: 1.25;">' + h2 + '</div>\n' +
-'<div style="font-family: ' + font + '; font-weight: bold; font-size: ' + uSize + 'px; color: ' + color + '; margin-top: 10px;">' + urlLine + '</div>\n' +
+'<div style="margin-top: 10px;">' + ctaMarkup + '</div>\n' +
 '</td></tr></table>\n' +
 '</v:textbox>\n' +
 '</v:rect>\n' +
@@ -418,7 +602,7 @@ function buildFooter(){
 '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center">\n' +
 '<div class="' + cH + '" style="font-family: ' + font + '; font-weight: bold; text-transform: uppercase; font-size: ' + hSize + 'px; color: ' + color + '; line-height: 1.25;">' + h1 + '</div>\n' +
 '<div class="' + cH + '" style="font-family: ' + font + '; font-weight: bold; text-transform: uppercase; font-size: ' + hSize + 'px; color: ' + color + '; line-height: 1.25;">' + h2 + '</div>\n' +
-'<div class="' + cU + '" style="font-family: ' + font + '; font-weight: bold; font-size: ' + uSize + 'px; color: ' + color + '; margin-top: 10px;">' + urlLine + '</div>\n' +
+'<div style="margin-top: 10px;">' + ctaMarkup + '</div>\n' +
 '</td></tr></table>\n' +
 '</td>\n' +
 '<!--<![endif]-->\n' +
@@ -443,23 +627,24 @@ function buildFooter(){
   document.getElementById('f_pUrl').style.fontSize = uSize + 'px';
   document.getElementById('f_pUrl').style.color = color;
   document.getElementById('f_pUrl').style.fontFamily = font;
+  document.getElementById('f_pUrl').style.textDecoration = 'none';
 }
 
-var producFields = ['p_imgUrl','p_templateId','p_imgHeight','p_bgFallback','p_brandName','p_brandTagline','p_brandSize','p_taglineSize','p_brandMarginTop','p_spacerHeight','p_line1','p_line2','p_line3','p_size1','p_size2','p_size3','p_textColor','p_marginBottom','p_mobileScale'];
+var producFields = ['p_imgUrl','p_templateId','p_imgHeight','p_bgFallback','p_brandName','p_brandTagline','p_brandSize','p_taglineSize','p_brandMarginTop','p_brandPosH','p_brandMarginH','p_brandImgUrl','p_brandImgKeepRatio','p_brandImgWidth','p_brandImgHeight','p_brandImgAlt','p_spacerHeight','p_line1','p_line2','p_line3','p_size1','p_size2','p_size3','p_textColor','p_mainPosH','p_mainMarginH','p_marginBottom','p_mobileScale'];
 producFields.forEach(function(id){
   var el = document.getElementById(id);
   el.addEventListener('input', buildProducto);
   el.addEventListener('change', buildProducto);
 });
 
-var footerFields = ['f_imgUrl','f_templateId','f_imgHeight','f_headline1','f_headline2','f_urlLine','f_headlineSize','f_urlSize','f_textColor','f_fontFamily','f_mobileScale'];
+var footerFields = ['f_imgUrl','f_templateId','f_imgHeight','f_headline1','f_headline2','f_urlLine','f_urlHref','f_headlineSize','f_urlSize','f_textColor','f_fontFamily','f_mobileScale'];
 footerFields.forEach(function(id){
   var el = document.getElementById(id);
   el.addEventListener('input', buildFooter);
   el.addEventListener('change', buildFooter);
 });
 
-buildProducto();
+setBrandType('text');
 buildFooter();
 </script>
 </body>
