@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Generador de HTML para email - Producto y Banner/Footer (sin position:absolute)</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 24px; color: #222; }
+  .wrap { max-width: 780px; margin: 0 auto; background: #fff; border-radius: 8px; padding: 24px 28px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.sub { font-size: 13px; color: #666; margin: 0 0 20px; }
+  .warn { font-size: 12px; color: #555; background: #f0f0f0; padding: 10px 12px; border-radius: 6px; margin: 0 0 20px; }
+  .ok { font-size: 12px; color: #1a5d1a; background: #eaf7ea; padding: 10px 12px; border-radius: 6px; margin: 0 0 20px; }
+  label { font-size: 13px; color: #444; display: block; margin-bottom: 4px; font-weight: bold; }
+  input, select { width: 100%; box-sizing: border-box; padding: 8px 10px; font-size: 14px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 14px; }
+  input[type="color"] { padding: 2px; height: 38px; }
+  .row { display: flex; gap: 14px; }
+  .row > div { flex: 1; }
+  fieldset { border: 1px solid #ddd; border-radius: 8px; padding: 14px 16px 2px; margin: 0 0 18px; }
+  legend { font-size: 13px; font-weight: bold; color: #333; padding: 0 6px; }
+  .hint { font-size: 11px; color: #777; margin: -8px 0 14px; }
+  .preview-box { background: #eee; border-radius: 8px; padding: 16px; display: flex; justify-content: center; margin-bottom: 8px; }
+  .previewWrap { width: 100%; max-width: 420px; background-size: cover; background-repeat: no-repeat; border-radius: 4px; display: flex; flex-direction: column; }
+  button { background: #2c2c2a; color: #fff; border: none; border-radius: 4px; padding: 10px 16px; font-size: 14px; cursor: pointer; width: 100%; }
+  button:hover { background: #444; }
+  button.secondary { background: #eee; color: #222; border: 1px solid #ccc; margin-bottom: 14px; }
+  .copyMsg { font-size: 13px; color: #1a7f37; min-height: 18px; margin: 8px 0 0; }
+  textarea { width: 100%; height: 230px; font-family: monospace; font-size: 11px; margin-top: 10px; box-sizing: border-box; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+  h2.section { font-size: 14px; color: #666; margin: 0 0 8px; font-weight: normal; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+  .tabBtn { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc; cursor: pointer; font-size: 14px; font-weight: 600; background: #eee; color: #222; width: auto; }
+  .tabBtn.active { background: #2c2c2a; color: #fff; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Generador de código HTML para email (Connectif)</h1>
+  <p class="sub">Elige la plantilla, rellena los campos, revisa la vista previa y copia el código final.</p>
+  <p class="ok">✅ Versión sin <code>position: absolute</code>: la imagen se usa como fondo de una celda de tabla y el texto va dentro de esa misma celda, así que se superpone de forma fiable en Gmail, Apple Mail, Outlook.com y apps móviles.</p>
+
+  <div class="tabs">
+    <button class="tabBtn active" id="tabProducto" onclick="switchTab('producto')">Plantilla producto</button>
+    <button class="tabBtn" id="tabFooter" onclick="switchTab('footer')">Banner / Footer</button>
+  </div>
+
+  <!-- ================= PANEL PRODUCTO ================= -->
+  <div id="panelProducto" class="panel active">
+    <p class="warn">⚠️ IvyPresto Display y Proxima Nova son fuentes de pago: se usan con fallback visual (Georgia itálica / Arial).</p>
+
+    <label for="p_imgUrl">URL de la imagen de fondo</label>
+    <input type="text" id="p_imgUrl" placeholder="https://..." value="https://www.benito.com/img/productes/imgProducte/ALMSPV_1400_1.png">
+
+    <div class="row">
+      <div>
+        <label for="p_templateId">Identificador único de plantilla</label>
+        <input type="text" id="p_templateId" value="milansolar">
+      </div>
+      <div>
+        <label for="p_imgHeight">Alto de la imagen a 600px de ancho (px)</label>
+        <input type="number" id="p_imgHeight" value="600" min="200" max="1200">
+      </div>
+    </div>
+    <label for="p_bgFallback">Color de fondo de respaldo</label>
+    <input type="color" id="p_bgFallback" value="#ffffff">
+
+    <fieldset>
+      <legend>Cabecera de marca (arriba)</legend>
+      <div class="row">
+        <div>
+          <label for="p_brandName">Marca</label>
+          <input type="text" id="p_brandName" value="BENITO">
+        </div>
+        <div>
+          <label for="p_brandSize">Tamaño (px)</label>
+          <input type="number" id="p_brandSize" value="28" min="10" max="60">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="p_brandTagline">Subtítulo</label>
+          <input type="text" id="p_brandTagline" value="Light  Urban  Play  Covers">
+        </div>
+        <div>
+          <label for="p_taglineSize">Tamaño (px)</label>
+          <input type="number" id="p_taglineSize" value="12" min="6" max="30">
+        </div>
+      </div>
+      <label for="p_brandMarginTop">Margen superior de la cabecera (px)</label>
+      <input type="number" id="p_brandMarginTop" value="20" min="0" max="150">
+    </fieldset>
+
+    <fieldset>
+      <legend>Espaciador (separa cabecera del bloque principal)</legend>
+      <label for="p_spacerHeight">Altura del espacio intermedio (px)</label>
+      <input type="number" id="p_spacerHeight" value="260" min="0" max="800">
+      <p class="hint">Ajusta este valor para que el bloque principal caiga visualmente donde quieres dentro de la imagen. Súbelo para bajar el texto, bájalo para subirlo.</p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Bloque principal (abajo)</legend>
+      <label for="p_line1">Línea 1 · itálica</label>
+      <input type="text" id="p_line1" value="luminaria">
+      <label for="p_line2">Línea 2 · negrita mayúsculas</label>
+      <input type="text" id="p_line2" value="MILAN SOLAR">
+      <label for="p_line3">Línea 3 · descripción</label>
+      <input type="text" id="p_line3" value="Luminaria solar autónoma lista para funcionar sin conexión eléctrica.">
+      <div class="row">
+        <div>
+          <label for="p_size1">Tamaño línea 1 (px)</label>
+          <input type="number" id="p_size1" value="32" min="10" max="80">
+        </div>
+        <div>
+          <label for="p_size2">Tamaño línea 2 (px)</label>
+          <input type="number" id="p_size2" value="48" min="10" max="90">
+        </div>
+        <div>
+          <label for="p_size3">Tamaño línea 3 (px)</label>
+          <input type="number" id="p_size3" value="16" min="8" max="40">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="p_textColor">Color del texto</label>
+          <input type="color" id="p_textColor" value="#000000">
+        </div>
+        <div>
+          <label for="p_marginBottom">Margen inferior tras el bloque (px)</label>
+          <input type="number" id="p_marginBottom" value="30" min="0" max="200">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>📱 Adaptación móvil</legend>
+      <label for="p_mobileScale">Escala en móvil (%) — se aplica a tamaños, alto de imagen y espaciador</label>
+      <input type="number" id="p_mobileScale" value="70" min="30" max="100">
+    </fieldset>
+
+    <button class="secondary" onclick="buildProducto()">↻ Actualizar vista previa y código</button>
+
+    <h2 class="section">Vista previa (aproximada)</h2>
+    <div class="preview-box">
+      <div class="previewWrap" id="p_previewWrap">
+        <div id="p_brandRow" style="text-align:center;">
+          <div id="p_pBrand" style="font-weight:bold; letter-spacing:2px; font-family:'Proxima Nova', Arial, Helvetica, sans-serif;"></div>
+          <div id="p_pTagline" style="letter-spacing:2px; font-family:'Proxima Nova', Arial, Helvetica, sans-serif; margin-top:4px;"></div>
+        </div>
+        <div id="p_spacerRow"></div>
+        <div id="p_mainRow" style="text-align:center;">
+          <div id="p_pLine1" style="font-style:italic; font-family:'IvyPresto Display', Georgia, 'Times New Roman', serif;"></div>
+          <div id="p_pLine2" style="font-weight:bold; text-transform:uppercase; font-family:'Proxima Nova', Arial, Helvetica, sans-serif;"></div>
+          <div id="p_pLine3" style="font-family:'Proxima Nova', Arial, Helvetica, sans-serif; margin-top:8px;"></div>
+        </div>
+      </div>
+    </div>
+    <p class="hint">Vista previa orientativa. Prueba siempre con un envío real, sobre todo tras ajustar el espaciador.</p>
+
+    <button onclick="copyText('p_output','p_copyMsg')">Copiar código HTML (producto)</button>
+    <p class="copyMsg" id="p_copyMsg"></p>
+    <textarea id="p_output" readonly></textarea>
+  </div>
+
+  <!-- ================= PANEL FOOTER/BANNER ================= -->
+  <div id="panelFooter" class="panel">
+    <p class="warn">Formato para banners tipo footer: imagen de fondo ancha con un titular en 2 líneas en negrita mayúsculas y una línea de URL/CTA debajo, centrado verticalmente.</p>
+
+    <label for="f_imgUrl">URL de la imagen de fondo</label>
+    <input type="text" id="f_imgUrl" placeholder="https://..." value="">
+
+    <div class="row">
+      <div>
+        <label for="f_templateId">Identificador único de plantilla</label>
+        <input type="text" id="f_templateId" value="footer1">
+      </div>
+      <div>
+        <label for="f_imgHeight">Alto de la imagen a 600px de ancho (px)</label>
+        <input type="number" id="f_imgHeight" value="300" min="100" max="900">
+      </div>
+    </div>
+
+    <label for="f_headline1">Titular · línea 1</label>
+    <input type="text" id="f_headline1" value="EXPERTOS EN">
+    <label for="f_headline2">Titular · línea 2</label>
+    <input type="text" id="f_headline2" value="ILUMINACIÓN EFICIENTE">
+    <label for="f_urlLine">Línea URL / CTA</label>
+    <input type="text" id="f_urlLine" value="www.benito.com">
+
+    <div class="row">
+      <div>
+        <label for="f_headlineSize">Tamaño titular (px)</label>
+        <input type="number" id="f_headlineSize" value="30" min="12" max="70">
+      </div>
+      <div>
+        <label for="f_urlSize">Tamaño línea URL (px)</label>
+        <input type="number" id="f_urlSize" value="18" min="8" max="40">
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="f_textColor">Color del texto</label>
+        <input type="color" id="f_textColor" value="#ffffff">
+      </div>
+      <div>
+        <label for="f_fontFamily">Fuente</label>
+        <select id="f_fontFamily">
+          <option value="Arial, Helvetica, sans-serif">Arial</option>
+          <option value="'Proxima Nova', Arial, Helvetica, sans-serif">Proxima Nova (fallback Arial)</option>
+          <option value="'Montserrat', Arial, sans-serif">Montserrat</option>
+          <option value="'Fira Sans', Arial, sans-serif">Fira Sans</option>
+        </select>
+      </div>
+    </div>
+
+    <fieldset>
+      <legend>📱 Adaptación móvil</legend>
+      <label for="f_mobileScale">Escala en móvil (%)</label>
+      <input type="number" id="f_mobileScale" value="75" min="30" max="100">
+    </fieldset>
+
+    <button class="secondary" onclick="buildFooter()">↻ Actualizar vista previa y código</button>
+
+    <h2 class="section">Vista previa (aproximada)</h2>
+    <div class="preview-box">
+      <div class="previewWrap" id="f_previewWrap" style="background-color:#556; align-items:center; justify-content:center;">
+        <div id="f_textBlock" style="text-align:center; width:90%; margin:0 auto;">
+          <div id="f_pHeadline1" style="font-weight:bold; text-transform:uppercase;"></div>
+          <div id="f_pHeadline2" style="font-weight:bold; text-transform:uppercase;"></div>
+          <div id="f_pUrl" style="font-weight:bold; margin-top:10px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <button onclick="copyText('f_output','f_copyMsg')">Copiar código HTML (banner/footer)</button>
+    <p class="copyMsg" id="f_copyMsg"></p>
+    <textarea id="f_output" readonly></textarea>
+  </div>
+</div>
+
+<script>
+var FONT_SCRIPT = "'IvyPresto Display', Georgia, 'Times New Roman', serif";
+var FONT_SANS = "'Proxima Nova', Arial, Helvetica, sans-serif";
+
+function switchTab(tab){
+  document.getElementById('panelProducto').classList.toggle('active', tab === 'producto');
+  document.getElementById('panelFooter').classList.toggle('active', tab === 'footer');
+  document.getElementById('tabProducto').classList.toggle('active', tab === 'producto');
+  document.getElementById('tabFooter').classList.toggle('active', tab === 'footer');
+}
+
+function copyText(taId, msgId){
+  var ta = document.getElementById(taId);
+  ta.select();
+  document.execCommand('copy');
+  try { navigator.clipboard.writeText(ta.value); } catch(e) {}
+  document.getElementById(msgId).textContent = 'Copiado al portapapeles';
+  setTimeout(function(){ document.getElementById(msgId).textContent=''; }, 2000);
+}
+
+/* ---------------- PRODUCTO ---------------- */
+function buildProducto(){
+  var url = document.getElementById('p_imgUrl').value.trim() || 'URL_DE_LA_IMAGEN';
+  var tid = (document.getElementById('p_templateId').value.trim() || 'plantilla').replace(/[^a-zA-Z0-9_-]/g, '');
+  var imgHeight = parseInt(document.getElementById('p_imgHeight').value, 10) || 600;
+  var bgFallback = document.getElementById('p_bgFallback').value;
+  var brand = document.getElementById('p_brandName').value;
+  var tagline = document.getElementById('p_brandTagline').value;
+  var brandSize = parseInt(document.getElementById('p_brandSize').value, 10) || 28;
+  var taglineSize = parseInt(document.getElementById('p_taglineSize').value, 10) || 12;
+  var brandMarginTop = parseInt(document.getElementById('p_brandMarginTop').value, 10) || 0;
+  var spacerHeight = parseInt(document.getElementById('p_spacerHeight').value, 10) || 0;
+  var l1 = document.getElementById('p_line1').value;
+  var l2 = document.getElementById('p_line2').value;
+  var l3 = document.getElementById('p_line3').value;
+  var s1 = parseInt(document.getElementById('p_size1').value, 10) || 32;
+  var s2 = parseInt(document.getElementById('p_size2').value, 10) || 48;
+  var s3 = parseInt(document.getElementById('p_size3').value, 10) || 16;
+  var color = document.getElementById('p_textColor').value;
+  var marginBottom = parseInt(document.getElementById('p_marginBottom').value, 10) || 0;
+  var scale = (parseInt(document.getElementById('p_mobileScale').value, 10) || 70) / 100;
+  function m(v){ return Math.round(v * scale); }
+
+  var cImgCell = 'cn-' + tid + '-imgcell';
+  var cBrand = 'cn-' + tid + '-brand';
+  var cTagline = 'cn-' + tid + '-tagline';
+  var cSpacer = 'cn-' + tid + '-spacer';
+  var cLine1 = 'cn-' + tid + '-line1';
+  var cLine2 = 'cn-' + tid + '-line2';
+  var cLine3 = 'cn-' + tid + '-line3';
+
+  var styleBlock = '<style>\n@media only screen and (max-width: 600px) {\n' +
+'  .' + cImgCell + ' { height: ' + m(imgHeight) + 'px !important; }\n' +
+'  .' + cBrand + ' { font-size: ' + m(brandSize) + 'px !important; }\n' +
+'  .' + cTagline + ' { font-size: ' + m(taglineSize) + 'px !important; }\n' +
+'  .' + cSpacer + ' { height: ' + m(spacerHeight) + 'px !important; line-height: ' + m(spacerHeight) + 'px !important; }\n' +
+'  .' + cLine1 + ' { font-size: ' + m(s1) + 'px !important; }\n' +
+'  .' + cLine2 + ' { font-size: ' + m(s2) + 'px !important; }\n' +
+'  .' + cLine3 + ' { font-size: ' + m(s3) + 'px !important; }\n' +
+'}\n</style>\n';
+
+  var code = styleBlock +
+'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;margin:0 auto;">\n' +
+'<tr>\n' +
+'<!--[if mso]>\n' +
+'<td style="padding:0;">\n' +
+'<v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:' + imgHeight + 'px;">\n' +
+'<v:fill type="frame" src="' + url + '" color="' + bgFallback + '" />\n' +
+'<v:textbox inset="0,0,0,0">\n' +
+'<table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0">\n' +
+'<tr><td valign="top" align="center" style="padding: ' + brandMarginTop + 'px 0px 0px 0px;">\n' +
+'<div style="font-family: ' + FONT_SANS + '; font-weight: bold; letter-spacing: 2px; font-size: ' + brandSize + 'px; color: ' + color + ';">' + brand + '</div>\n' +
+'<div style="font-family: ' + FONT_SANS + '; letter-spacing: 2px; font-size: ' + taglineSize + 'px; color: ' + color + '; margin-top: 4px;">' + tagline + '</div>\n' +
+'</td></tr>\n' +
+'<tr><td valign="bottom" align="center" style="padding: 0px 0px ' + marginBottom + 'px 0px;">\n' +
+'<div style="font-family: ' + FONT_SCRIPT + '; font-style: italic; font-size: ' + s1 + 'px; color: ' + color + ';">' + l1 + '</div>\n' +
+'<div style="font-family: ' + FONT_SANS + '; font-weight: bold; text-transform: uppercase; font-size: ' + s2 + 'px; color: ' + color + '; line-height: 1.1;">' + l2 + '</div>\n' +
+'<div style="font-family: ' + FONT_SANS + '; font-size: ' + s3 + 'px; color: ' + color + '; margin-top: 8px;">' + l3 + '</div>\n' +
+'</td></tr>\n' +
+'</table>\n' +
+'</v:textbox>\n' +
+'</v:rect>\n' +
+'</td>\n' +
+'<![endif]-->\n' +
+'<!--[if !mso]><!-->\n' +
+'<td class="' + cImgCell + '" align="center" valign="top" background="' + url + '" bgcolor="' + bgFallback + '" style="background-image:url(\'' + url + '\'); background-size:cover; background-position:center top; background-repeat:no-repeat; width:100%; height:' + imgHeight + 'px;">\n' +
+'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">\n' +
+'<tr><td align="center" style="padding: ' + brandMarginTop + 'px 0px 0px 0px;">\n' +
+'<div class="' + cBrand + '" style="font-family: ' + FONT_SANS + '; font-weight: bold; letter-spacing: 2px; font-size: ' + brandSize + 'px; color: ' + color + ';">' + brand + '</div>\n' +
+'<div class="' + cTagline + '" style="font-family: ' + FONT_SANS + '; letter-spacing: 2px; font-size: ' + taglineSize + 'px; color: ' + color + '; margin-top: 4px;">' + tagline + '</div>\n' +
+'</td></tr>\n' +
+'<tr><td class="' + cSpacer + '" height="' + spacerHeight + '" style="height:' + spacerHeight + 'px; line-height:' + spacerHeight + 'px; font-size:1px;">&nbsp;</td></tr>\n' +
+'<tr><td align="center" style="padding: 0px 0px ' + marginBottom + 'px 0px;">\n' +
+'<div class="' + cLine1 + '" style="font-family: ' + FONT_SCRIPT + '; font-style: italic; font-size: ' + s1 + 'px; color: ' + color + ';">' + l1 + '</div>\n' +
+'<div class="' + cLine2 + '" style="font-family: ' + FONT_SANS + '; font-weight: bold; text-transform: uppercase; font-size: ' + s2 + 'px; color: ' + color + '; line-height: 1.1;">' + l2 + '</div>\n' +
+'<div class="' + cLine3 + '" style="font-family: ' + FONT_SANS + '; font-size: ' + s3 + 'px; color: ' + color + '; margin-top: 8px;">' + l3 + '</div>\n' +
+'</td></tr>\n' +
+'</table>\n' +
+'</td>\n' +
+'<!--<![endif]-->\n' +
+'</tr>\n' +
+'</table>';
+
+  document.getElementById('p_output').value = code;
+
+  var wrap = document.getElementById('p_previewWrap');
+  wrap.style.backgroundImage = "url('" + url + "')";
+  wrap.style.minHeight = imgHeight + 'px';
+  wrap.style.backgroundColor = bgFallback;
+
+  document.getElementById('p_pBrand').textContent = brand;
+  document.getElementById('p_pBrand').style.fontSize = brandSize + 'px';
+  document.getElementById('p_pBrand').style.color = color;
+  document.getElementById('p_pTagline').textContent = tagline;
+  document.getElementById('p_pTagline').style.fontSize = taglineSize + 'px';
+  document.getElementById('p_pTagline').style.color = color;
+  document.getElementById('p_brandRow').style.paddingTop = brandMarginTop + 'px';
+
+  document.getElementById('p_spacerRow').style.height = spacerHeight + 'px';
+
+  document.getElementById('p_pLine1').textContent = l1;
+  document.getElementById('p_pLine1').style.fontSize = s1 + 'px';
+  document.getElementById('p_pLine1').style.color = color;
+  document.getElementById('p_pLine2').textContent = l2;
+  document.getElementById('p_pLine2').style.fontSize = s2 + 'px';
+  document.getElementById('p_pLine2').style.color = color;
+  document.getElementById('p_pLine2').style.lineHeight = '1.1';
+  document.getElementById('p_pLine3').textContent = l3;
+  document.getElementById('p_pLine3').style.fontSize = s3 + 'px';
+  document.getElementById('p_pLine3').style.color = color;
+  document.getElementById('p_mainRow').style.paddingBottom = marginBottom + 'px';
+}
+
+/* ---------------- FOOTER / BANNER ---------------- */
+function buildFooter(){
+  var url = document.getElementById('f_imgUrl').value.trim() || 'URL_DE_LA_IMAGEN';
+  var tid = (document.getElementById('f_templateId').value.trim() || 'footer').replace(/[^a-zA-Z0-9_-]/g, '');
+  var imgHeight = parseInt(document.getElementById('f_imgHeight').value, 10) || 300;
+  var h1 = document.getElementById('f_headline1').value;
+  var h2 = document.getElementById('f_headline2').value;
+  var urlLine = document.getElementById('f_urlLine').value;
+  var hSize = parseInt(document.getElementById('f_headlineSize').value, 10) || 30;
+  var uSize = parseInt(document.getElementById('f_urlSize').value, 10) || 18;
+  var color = document.getElementById('f_textColor').value;
+  var font = document.getElementById('f_fontFamily').value;
+  var scale = (parseInt(document.getElementById('f_mobileScale').value, 10) || 75) / 100;
+  function m(v){ return Math.round(v * scale); }
+
+  var cImgCell = 'cn-' + tid + '-imgcell';
+  var cH = 'cn-' + tid + '-headline';
+  var cU = 'cn-' + tid + '-url';
+
+  var styleBlock = '<style>\n@media only screen and (max-width: 600px) {\n' +
+'  .' + cImgCell + ' { height: ' + m(imgHeight) + 'px !important; }\n' +
+'  .' + cH + ' { font-size: ' + m(hSize) + 'px !important; }\n' +
+'  .' + cU + ' { font-size: ' + m(uSize) + 'px !important; }\n' +
+'}\n</style>\n';
+
+  var code = styleBlock +
+'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;margin:0 auto;">\n' +
+'<tr>\n' +
+'<!--[if mso]>\n' +
+'<td style="padding:0;">\n' +
+'<v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:' + imgHeight + 'px;">\n' +
+'<v:fill type="frame" src="' + url + '" color="#000000" />\n' +
+'<v:textbox inset="0,0,0,0">\n' +
+'<table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0"><tr><td valign="middle" align="center">\n' +
+'<div style="font-family: ' + font + '; font-weight: bold; text-transform: uppercase; font-size: ' + hSize + 'px; color: ' + color + '; line-height: 1.25;">' + h1 + '</div>\n' +
+'<div style="font-family: ' + font + '; font-weight: bold; text-transform: uppercase; font-size: ' + hSize + 'px; color: ' + color + '; line-height: 1.25;">' + h2 + '</div>\n' +
+'<div style="font-family: ' + font + '; font-weight: bold; font-size: ' + uSize + 'px; color: ' + color + '; margin-top: 10px;">' + urlLine + '</div>\n' +
+'</td></tr></table>\n' +
+'</v:textbox>\n' +
+'</v:rect>\n' +
+'</td>\n' +
+'<![endif]-->\n' +
+'<!--[if !mso]><!-->\n' +
+'<td class="' + cImgCell + '" align="center" valign="middle" background="' + url + '" bgcolor="#000000" style="background-image:url(\'' + url + '\'); background-size:cover; background-position:center; background-repeat:no-repeat; width:100%; height:' + imgHeight + 'px;">\n' +
+'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center">\n' +
+'<div class="' + cH + '" style="font-family: ' + font + '; font-weight: bold; text-transform: uppercase; font-size: ' + hSize + 'px; color: ' + color + '; line-height: 1.25;">' + h1 + '</div>\n' +
+'<div class="' + cH + '" style="font-family: ' + font + '; font-weight: bold; text-transform: uppercase; font-size: ' + hSize + 'px; color: ' + color + '; line-height: 1.25;">' + h2 + '</div>\n' +
+'<div class="' + cU + '" style="font-family: ' + font + '; font-weight: bold; font-size: ' + uSize + 'px; color: ' + color + '; margin-top: 10px;">' + urlLine + '</div>\n' +
+'</td></tr></table>\n' +
+'</td>\n' +
+'<!--<![endif]-->\n' +
+'</tr>\n' +
+'</table>';
+
+  document.getElementById('f_output').value = code;
+
+  var wrap = document.getElementById('f_previewWrap');
+  wrap.style.backgroundImage = "url('" + url + "')";
+  wrap.style.minHeight = imgHeight + 'px';
+
+  document.getElementById('f_pHeadline1').textContent = h1;
+  document.getElementById('f_pHeadline1').style.fontSize = hSize + 'px';
+  document.getElementById('f_pHeadline1').style.color = color;
+  document.getElementById('f_pHeadline1').style.fontFamily = font;
+  document.getElementById('f_pHeadline2').textContent = h2;
+  document.getElementById('f_pHeadline2').style.fontSize = hSize + 'px';
+  document.getElementById('f_pHeadline2').style.color = color;
+  document.getElementById('f_pHeadline2').style.fontFamily = font;
+  document.getElementById('f_pUrl').textContent = urlLine;
+  document.getElementById('f_pUrl').style.fontSize = uSize + 'px';
+  document.getElementById('f_pUrl').style.color = color;
+  document.getElementById('f_pUrl').style.fontFamily = font;
+}
+
+var producFields = ['p_imgUrl','p_templateId','p_imgHeight','p_bgFallback','p_brandName','p_brandTagline','p_brandSize','p_taglineSize','p_brandMarginTop','p_spacerHeight','p_line1','p_line2','p_line3','p_size1','p_size2','p_size3','p_textColor','p_marginBottom','p_mobileScale'];
+producFields.forEach(function(id){
+  var el = document.getElementById(id);
+  el.addEventListener('input', buildProducto);
+  el.addEventListener('change', buildProducto);
+});
+
+var footerFields = ['f_imgUrl','f_templateId','f_imgHeight','f_headline1','f_headline2','f_urlLine','f_headlineSize','f_urlSize','f_textColor','f_fontFamily','f_mobileScale'];
+footerFields.forEach(function(id){
+  var el = document.getElementById(id);
+  el.addEventListener('input', buildFooter);
+  el.addEventListener('change', buildFooter);
+});
+
+buildProducto();
+buildFooter();
+</script>
+</body>
+</html>
