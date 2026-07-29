@@ -42,8 +42,9 @@
   <p class="ok">✅ Sin <code>position: absolute</code>: la imagen es el fondo de una celda de tabla y el texto va dentro, superponiéndose de forma fiable en Gmail, Apple Mail, Outlook.com y apps móviles.</p>
 
   <div class="tabs">
-    <button class="tabBtn active" id="tabProducto" onclick="switchTab('producto')">Plantilla producto</button>
+    <button class="tabBtn active" id="tabProducto" onclick="switchTab('producto')">Header</button>
     <button class="tabBtn" id="tabFooter" onclick="switchTab('footer')">Banner / Footer</button>
+    <button class="tabBtn" id="tabCuerpo" onclick="switchTab('cuerpo')">Cuerpo del email</button>
   </div>
 
   <!-- ================= PANEL PRODUCTO ================= -->
@@ -306,6 +307,142 @@
     <p class="copyMsg" id="f_copyMsg"></p>
     <textarea id="f_output" readonly></textarea>
   </div>
+
+  <!-- ================= PANEL CUERPO DEL EMAIL ================= -->
+  <div id="panelCuerpo" class="panel">
+    <p class="ok">Tip: en la descripción, escribe <code>**palabra**</code> para que salga en negrita.</p>
+
+    <div class="row" style="margin-bottom:14px;">
+      <button type="button" class="toggleBtn active" id="c_layoutLeftBtn" onclick="setLayout('imgleft')">Imagen izquierda / Texto derecha</button>
+      <button type="button" class="toggleBtn" id="c_layoutRightBtn" onclick="setLayout('imgright')">Imagen derecha / Texto izquierda</button>
+      <button type="button" class="toggleBtn" id="c_layoutCenterBtn" onclick="setLayout('imgcenter')">Imagen centrada / Texto centrado</button>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="c_templateId">Identificador único de plantilla</label>
+        <input type="text" id="c_templateId" value="cuerpo1">
+      </div>
+      <div>
+        <label for="c_blockBg">Color de fondo del bloque</label>
+        <input type="color" id="c_blockBg" value="#000000">
+      </div>
+    </div>
+
+    <fieldset>
+      <legend>Imagen</legend>
+      <label for="c_imgUrl">URL de la imagen</label>
+      <input type="text" id="c_imgUrl" placeholder="https://..." value="">
+      <div class="row">
+        <div>
+          <label for="c_imgWidth" id="c_imgWidthLabel">Ancho de la columna imagen (px)</label>
+          <input type="number" id="c_imgWidth" value="260" min="100" max="600">
+        </div>
+        <div>
+          <label for="c_imgRenderWidth">Ancho real de la imagen (px)</label>
+          <input type="number" id="c_imgRenderWidth" value="260" min="50" max="600">
+        </div>
+      </div>
+      <div class="row" id="c_imgAlignFields">
+        <div id="c_imgAlignHWrap">
+          <label for="c_imgAlignH">Alineación horizontal de la imagen</label>
+          <select id="c_imgAlignH">
+            <option value="left">Izquierda</option>
+            <option value="center" selected>Centro</option>
+            <option value="right">Derecha</option>
+          </select>
+        </div>
+        <div id="c_imgAlignVWrap">
+          <label for="c_imgAlignV">Alineación vertical de la imagen</label>
+          <select id="c_imgAlignV">
+            <option value="top">Arriba</option>
+            <option value="middle" selected>Centro</option>
+            <option value="bottom">Abajo</option>
+          </select>
+        </div>
+      </div>
+      <label for="c_imgAlt">Texto alternativo (alt)</label>
+      <input type="text" id="c_imgAlt" value="Producto">
+    </fieldset>
+
+    <fieldset>
+      <legend>Título</legend>
+      <label style="display:flex; align-items:center; gap:6px; margin-bottom:12px; cursor:pointer; font-weight:normal;">
+        <input type="checkbox" id="c_titleItalic" checked style="width:auto; margin:0;">
+        Título en itálica
+      </label>
+      <label for="c_title">Texto del título</label>
+      <input type="text" id="c_title" value="Luminaria MILAN SOLAR, autonomía de hasta 3 días">
+      <div class="row">
+        <div>
+          <label for="c_titleSize">Tamaño título (px)</label>
+          <input type="number" id="c_titleSize" value="22" min="14" max="50">
+        </div>
+        <div>
+          <label for="c_titleColor">Color del título</label>
+          <input type="color" id="c_titleColor" value="#c99a5b">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Descripción</legend>
+      <label for="c_desc">Texto (usa **texto** para negrita)</label>
+      <textarea id="c_desc" style="min-height:70px;">De formas aerodinámicas y con baja resistencia al viento, ofrece una **máxima eficiencia, hasta 160lm/W reales**, y una autonomía de hasta 3 días gracias al panel fotovoltaico y su batería LiFePo4.</textarea>
+      <div class="row">
+        <div>
+          <label for="c_descSize">Tamaño descripción (px)</label>
+          <input type="number" id="c_descSize" value="15" min="10" max="30">
+        </div>
+        <div>
+          <label for="c_descColor">Color de la descripción</label>
+          <input type="color" id="c_descColor" value="#ffffff">
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Botón CTA</legend>
+      <label for="c_btnText">Texto del botón</label>
+      <input type="text" id="c_btnText" value="VER PRODUCTO">
+      <label for="c_btnHref">Enlace de destino</label>
+      <input type="text" id="c_btnHref" value="https://www.benito.com">
+      <div class="row">
+        <div>
+          <label for="c_btnBg">Color de fondo del botón</label>
+          <input type="color" id="c_btnBg" value="#c99a5b">
+        </div>
+        <div>
+          <label for="c_btnColor">Color del texto del botón</label>
+          <input type="color" id="c_btnColor" value="#000000">
+        </div>
+      </div>
+    </fieldset>
+
+    <p class="hint">📱 En pantallas pequeñas, la imagen y el texto se apilan automáticamente uno encima del otro.</p>
+
+    <button class="secondary" onclick="buildCuerpo()">↻ Actualizar vista previa y código</button>
+
+    <h2 class="section">Vista previa (aproximada)</h2>
+    <div id="c_previewBg" style="border-radius:8px; padding:24px;">
+      <div id="c_previewRow" style="display:flex; gap:24px; max-width:560px; margin:0 auto;">
+        <div id="c_imgCellPreview" style="display:flex; flex-shrink:0;">
+          <img id="c_previewImg" style="border-radius:4px; object-fit:cover;" alt="">
+        </div>
+        <div id="c_previewText" style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+          <div id="c_pTitle"></div>
+          <div id="c_pDesc" style="margin-top:12px; line-height:1.5;"></div>
+          <div style="margin-top:16px;">
+            <span id="c_pBtn" style="display:inline-block; padding:12px 24px; font-weight:bold; text-decoration:none;"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button onclick="copyText('c_output','c_copyMsg')">Copiar código HTML (cuerpo del email)</button>
+    <p class="copyMsg" id="c_copyMsg"></p>
+    <textarea id="c_output" readonly></textarea>
+  </div>
 </div>
 
 <script>
@@ -334,8 +471,10 @@ function onLogoUrlChange(){
 function switchTab(tab){
   document.getElementById('panelProducto').classList.toggle('active', tab === 'producto');
   document.getElementById('panelFooter').classList.toggle('active', tab === 'footer');
+  document.getElementById('panelCuerpo').classList.toggle('active', tab === 'cuerpo');
   document.getElementById('tabProducto').classList.toggle('active', tab === 'producto');
   document.getElementById('tabFooter').classList.toggle('active', tab === 'footer');
+  document.getElementById('tabCuerpo').classList.toggle('active', tab === 'cuerpo');
 }
 
 function setBrandType(type){
@@ -644,8 +783,199 @@ footerFields.forEach(function(id){
   el.addEventListener('change', buildFooter);
 });
 
+var layoutMode = 'imgleft';
+
+function setLayout(mode){
+  layoutMode = mode;
+  document.getElementById('c_layoutLeftBtn').classList.toggle('active', mode === 'imgleft');
+  document.getElementById('c_layoutRightBtn').classList.toggle('active', mode === 'imgright');
+  document.getElementById('c_layoutCenterBtn').classList.toggle('active', mode === 'imgcenter');
+
+  var isCenter = mode === 'imgcenter';
+  document.getElementById('c_imgWidthLabel').textContent = isCenter ? 'Ancho máximo de la imagen (px)' : 'Ancho de la columna imagen (px)';
+  document.getElementById('c_imgAlignVWrap').style.display = isCenter ? 'none' : 'block';
+
+  buildCuerpo();
+}
+
+function parseBold(text){
+  return text.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+}
+
+function buildCuerpo(){
+  var tid = (document.getElementById('c_templateId').value.trim() || 'cuerpo').replace(/[^a-zA-Z0-9_-]/g, '');
+  var blockBg = document.getElementById('c_blockBg').value;
+  var imgUrl = document.getElementById('c_imgUrl').value.trim() || 'URL_DE_LA_IMAGEN';
+  var imgWidth = parseInt(document.getElementById('c_imgWidth').value, 10) || 260;
+  var imgRenderWidth = parseInt(document.getElementById('c_imgRenderWidth').value, 10) || imgWidth;
+  var imgAlignH = document.getElementById('c_imgAlignH').value;
+  var imgAlignV = document.getElementById('c_imgAlignV').value;
+  var imgAlt = document.getElementById('c_imgAlt').value || 'Imagen';
+
+  var titleItalic = document.getElementById('c_titleItalic').checked;
+  var title = document.getElementById('c_title').value;
+  var titleSize = parseInt(document.getElementById('c_titleSize').value, 10) || 22;
+  var titleColor = document.getElementById('c_titleColor').value;
+
+  var descRaw = document.getElementById('c_desc').value;
+  var descSize = parseInt(document.getElementById('c_descSize').value, 10) || 15;
+  var descColor = document.getElementById('c_descColor').value;
+  var descHtml = parseBold(descRaw);
+
+  var btnText = document.getElementById('c_btnText').value;
+  var btnHref = document.getElementById('c_btnHref').value.trim() || '#';
+  var btnBg = document.getElementById('c_btnBg').value;
+  var btnColor = document.getElementById('c_btnColor').value;
+
+  var cImgCol = 'cn-' + tid + '-imgcol';
+  var cTextCol = 'cn-' + tid + '-textcol';
+  var gap = 24;
+  var textWidth = 600 - imgWidth - gap;
+  var textAlign = layoutMode === 'imgleft' ? 'left' : (layoutMode === 'imgright' ? 'right' : 'center');
+
+  var titleFontFamily = titleItalic ? FONT_SCRIPT : FONT_SANS;
+  var titleFontStyle = titleItalic ? 'italic' : 'normal';
+  var titleFontWeight = titleItalic ? 'normal' : 'bold';
+
+  var titleHtml = title ? ('<div style="font-family: ' + titleFontFamily + '; font-style: ' + titleFontStyle + '; font-weight: ' + titleFontWeight + '; font-size: ' + titleSize + 'px; color: ' + titleColor + '; line-height:1.3; text-align:' + textAlign + ';">' + title + '</div>') : '';
+
+  var ctaMso = '<v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" href="' + btnHref + '" style="height:44px;v-text-anchor:middle;width:180px;" arcsize="0%" fillcolor="' + btnBg + '" strokecolor="' + btnBg + '">' +
+'<w:anchorlock/><center style="color:' + btnColor + ';font-family:Arial,sans-serif;font-size:15px;font-weight:bold;">' + btnText + '</center></v:roundrect>';
+
+  var ctaModern = '<a href="' + btnHref + '" target="_blank" style="background-color:' + btnBg + '; border-radius:0; color:' + btnColor + ' !important; display:inline-block; font-family:' + FONT_SANS + '; font-size:15px; font-weight:bold; line-height:44px; text-align:center; text-decoration:none !important; padding:0 24px; -webkit-text-size-adjust:none;">' +
+'<span style="color:' + btnColor + ' !important; text-decoration:none !important;">' + btnText + '</span></a>';
+
+  var descBlock = '<div style="font-family: ' + FONT_SANS + '; font-size: ' + descSize + 'px; color: ' + descColor + '; margin-top:' + (title?'10px':'0') + '; line-height:1.5; text-align:' + textAlign + ';">' + descHtml + '</div>';
+
+  var imgTag = '<img src="' + imgUrl + '" width="' + imgRenderWidth + '" alt="' + imgAlt + '" style="display:inline-block; width:' + imgRenderWidth + 'px; max-width:100%; height:auto; border:0; border-radius:4px;" />';
+
+  var code, msoCols, modernCols;
+
+  if (layoutMode === 'imgcenter') {
+    var fullImgTag = '<img src="' + imgUrl + '" width="' + imgRenderWidth + '" alt="' + imgAlt + '" style="display:block; margin:0 auto; width:100%; max-width:' + imgRenderWidth + 'px; height:auto; border:0; border-radius:4px;" />';
+    var centerBlock =
+fullImgTag +
+'<div style="margin-top:20px;">' + titleHtml + '</div>' +
+descBlock +
+'<div style="margin-top:16px; text-align:center;">' + ctaModern + '</div>';
+    var centerBlockMso =
+fullImgTag +
+'<div style="margin-top:20px;">' + titleHtml + '</div>' +
+descBlock +
+'<div style="margin-top:16px; text-align:center;">' + ctaMso + '</div>';
+
+    code =
+'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;margin:0 auto; background-color:' + blockBg + ';">\n' +
+'<tr><td align="center" style="padding:30px 20px;">\n' +
+'<!--[if mso]>\n' +
+centerBlockMso + '\n' +
+'<![endif]-->\n' +
+'<!--[if !mso]><!-->\n' +
+centerBlock + '\n' +
+'<!--<![endif]-->\n' +
+'</td></tr>\n' +
+'</table>';
+  } else {
+    var imgCellStyle = 'width:' + imgWidth + 'px; padding-right:' + gap + 'px;';
+    var textBlockMso = titleHtml + descBlock + '<div style="margin-top:16px; text-align:' + textAlign + ';">' + ctaMso + '</div>';
+    var textBlockModern = titleHtml + descBlock + '<div style="margin-top:16px; text-align:' + textAlign + ';">' + ctaModern + '</div>';
+
+    if (layoutMode === 'imgleft') {
+      msoCols = '<td width="' + imgWidth + '" valign="' + imgAlignV + '" align="' + imgAlignH + '">' + imgTag + '</td><td width="' + gap + '"></td><td width="' + textWidth + '" valign="middle">' + textBlockMso + '</td>';
+      modernCols = '<td class="' + cImgCol + '" valign="' + imgAlignV + '" align="' + imgAlignH + '" style="' + imgCellStyle + '">' + imgTag + '</td>' +
+'<td class="' + cTextCol + '" valign="middle" style="width:auto;">' + textBlockModern + '</td>';
+    } else {
+      msoCols = '<td width="' + textWidth + '" valign="middle">' + textBlockMso + '</td><td width="' + gap + '"></td><td width="' + imgWidth + '" valign="' + imgAlignV + '" align="' + imgAlignH + '">' + imgTag + '</td>';
+      modernCols = '<td class="' + cTextCol + '" valign="middle" style="width:auto; padding-right:' + gap + 'px;">' + textBlockModern + '</td>' +
+'<td class="' + cImgCol + '" valign="' + imgAlignV + '" align="' + imgAlignH + '" style="width:' + imgWidth + 'px;">' + imgTag + '</td>';
+    }
+
+    code =
+'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;margin:0 auto; background-color:' + blockBg + ';">\n' +
+'<tr><td style="padding:30px 20px;">\n' +
+'<!--[if mso]>\n' +
+'<table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0"><tr>\n' +
+msoCols + '\n' +
+'</tr></table>\n' +
+'<![endif]-->\n' +
+'<!--[if !mso]><!-->\n' +
+'<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>\n' +
+modernCols + '\n' +
+'</tr></table>\n' +
+'<!--<![endif]-->\n' +
+'</td></tr>\n' +
+'</table>';
+  }
+
+  var styleBlockC = '';
+  if (layoutMode !== 'imgcenter') {
+    styleBlockC = '<style>\n@media only screen and (max-width: 600px) {\n' +
+'  .' + cImgCol + ', .' + cTextCol + ' { display:block !important; width:100% !important; padding:0 0 20px 0 !important; text-align:center !important; }\n' +
+'  .' + cImgCol + ' img { margin:0 auto !important; }\n' +
+'}\n</style>\n';
+  }
+  code = styleBlockC + code;
+
+  document.getElementById('c_output').value = code;
+
+  document.getElementById('c_previewBg').style.backgroundColor = blockBg;
+
+  if (layoutMode === 'imgcenter') {
+    document.getElementById('c_previewRow').style.flexDirection = 'column';
+    document.getElementById('c_previewRow').style.alignItems = 'center';
+    document.getElementById('c_imgCellPreview').style.width = '100%';
+    document.getElementById('c_imgCellPreview').style.justifyContent = imgAlignH === 'left' ? 'flex-start' : (imgAlignH === 'right' ? 'flex-end' : 'center');
+    document.getElementById('c_previewImg').style.width = Math.min(imgRenderWidth, 560) + 'px';
+    document.getElementById('c_previewText').style.textAlign = 'center';
+    document.getElementById('c_previewText').style.alignItems = 'center';
+  } else {
+    document.getElementById('c_previewRow').style.flexDirection = layoutMode === 'imgleft' ? 'row' : 'row-reverse';
+    document.getElementById('c_previewRow').style.alignItems = 'stretch';
+    var imgCellPrev = document.getElementById('c_imgCellPreview');
+    imgCellPrev.style.width = imgWidth + 'px';
+    imgCellPrev.style.justifyContent = imgAlignH === 'left' ? 'flex-start' : (imgAlignH === 'right' ? 'flex-end' : 'center');
+    imgCellPrev.style.alignItems = imgAlignV === 'top' ? 'flex-start' : (imgAlignV === 'bottom' ? 'flex-end' : 'center');
+    document.getElementById('c_previewImg').style.width = imgRenderWidth + 'px';
+    document.getElementById('c_previewText').style.textAlign = textAlign;
+  }
+
+  var imgPrev = document.getElementById('c_previewImg');
+  imgPrev.src = imgUrl;
+
+  var titlePrev = document.getElementById('c_pTitle');
+  titlePrev.textContent = title;
+  titlePrev.style.display = title ? 'block' : 'none';
+  titlePrev.style.fontSize = titleSize + 'px';
+  titlePrev.style.color = titleColor;
+  titlePrev.style.fontFamily = titleItalic ? "'IvyPresto Display', Georgia, serif" : "'Proxima Nova', Arial, sans-serif";
+  titlePrev.style.fontStyle = titleItalic ? 'italic' : 'normal';
+  titlePrev.style.fontWeight = titleItalic ? 'normal' : 'bold';
+  titlePrev.style.lineHeight = '1.3';
+
+  var descPrev = document.getElementById('c_pDesc');
+  descPrev.innerHTML = descHtml;
+  descPrev.style.fontSize = descSize + 'px';
+  descPrev.style.color = descColor;
+  descPrev.style.fontFamily = "'Proxima Nova', Arial, sans-serif";
+
+  var btnPrev = document.getElementById('c_pBtn');
+  btnPrev.textContent = btnText;
+  btnPrev.style.backgroundColor = btnBg;
+  btnPrev.style.color = btnColor;
+  btnPrev.style.fontFamily = "'Proxima Nova', Arial, sans-serif";
+  btnPrev.style.borderRadius = '0';
+}
+
+var cuerpoFields = ['c_templateId','c_blockBg','c_imgUrl','c_imgWidth','c_imgRenderWidth','c_imgAlignH','c_imgAlignV','c_imgAlt','c_titleItalic','c_title','c_titleSize','c_titleColor','c_desc','c_descSize','c_descColor','c_btnText','c_btnHref','c_btnBg','c_btnColor'];
+cuerpoFields.forEach(function(id){
+  var el = document.getElementById(id);
+  el.addEventListener('input', buildCuerpo);
+  el.addEventListener('change', buildCuerpo);
+});
+
 setBrandType('text');
 buildFooter();
+setLayout('imgleft');
 </script>
 </body>
 </html>
