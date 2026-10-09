@@ -116,6 +116,12 @@
   .spark{margin-top:10px;}
 
   .kpi-period{font-size:10.5px; color:var(--muted); margin-top:3px;}
+  .kpi-vars{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:10px 0 6px;}
+  .kv{border-left:2px solid var(--line); padding-left:8px;}
+  .kv-lab{display:block; font-size:10.5px; color:var(--muted);}
+  .kv-val{display:block; font-size:15px; font-weight:600; margin:1px 0; white-space:nowrap;}
+  .kv-val.up{color:var(--up);} .kv-val.down{color:var(--down);} .kv-val.flat{color:var(--muted);}
+  .kv-ref{display:block; font-size:10px; color:var(--muted);}
   .mom{font-weight:600; white-space:nowrap;}
   .mom.up{color:var(--up);}
   .mom.down{color:var(--down);}
@@ -222,18 +228,18 @@
   <!-- VIEW RESUMEN: pantalla ejecutiva con semaforos -->
   <div class="view active" id="view-resumen">
     <h2 class="section-title"><span class="chev">&lt;</span>Resumen ejecutivo</h2>
-    <p class="section-sub">Indicadores clave a escala nacional: evolución respecto al periodo anterior y comparación con el mismo periodo del año anterior.</p>
+    <p class="section-sub">Indicadores clave a escala nacional: comparación con el periodo anterior y con el mismo periodo del año anterior.</p>
     <div class="res-balance" id="res-balance"></div>
     <div class="res-wrap">
       <table class="res">
         <thead><tr>
-          <th>Indicador</th><th class="num">Último dato</th><th class="num">Evolución</th>
+          <th>Indicador</th><th class="num">Último dato</th><th class="num">vs periodo anterior</th>
           <th class="num">vs año anterior</th><th>Tendencia 12 meses</th><th class="ctr">Semáforo</th>
         </tr></thead>
         <tbody id="res-body"></tbody>
       </table>
     </div>
-    <p class="res-nota">Semáforo verde: evolución y comparación con el año anterior favorables. Ámbar: solo una de las dos es favorable. Rojo: ninguna. En precios de materiales, una subida se considera desfavorable. * Aviso sobre el dato (pasa el ratón por encima).</p>
+    <p class="res-nota">Semáforo verde: comparación con el periodo anterior y con el año anterior favorables. Ámbar: solo una de las dos es favorable. Rojo: ninguna. En los indicadores que se publican como tasa interanual, la comparación con el año anterior es la propia tasa (%) y la comparación con el periodo anterior es el cambio de esa tasa en puntos porcentuales (p.p.). En precios de materiales, una subida se considera desfavorable. * Aviso sobre el dato (pasa el ratón por encima).</p>
   </div>
 
   <!-- VIEW GLOBAL: 3 bloques de Ratios, botones en fila -->
@@ -454,6 +460,61 @@ function evolucionHtml(k, esInteranual){
   return `<span class="mom ${cls}">${fmtDelta.format(redondeado)}${unidad} vs ${ant.t}</span>${aviso}`;
 }
 
+// ---------- Variaciones en las tarjetas del Cuadro global ----------
+// KPIs en valor absoluto: Var. mensual / anual (vs diciembre) / interanual, en %.
+// KPIs que vienen como tasa interanual: la tasa en %, y sus cambios vs periodo anterior y vs diciembre en p.p.
+function colorVariacion(v, esPrecio){
+  const r = Math.round(v*10)/10;
+  if(r === 0) return 'flat';
+  return (esPrecio ? r < 0 : r > 0) ? 'up' : 'down';
+}
+function variacionesHtml(k, esInteranual){
+  const serie = esInteranual ? (k.serie || []) : (k.serie_absoluta || k.serie || []);
+  if(!serie.length) return '';
+  const esPrecio = KPIS_PRECIO.has(k.nombre);
+  const trimestral = /T\d$/.test(serie[serie.length-1].t);
+  const ult = serie[serie.length-1];
+  const y = +ult.t.slice(0,4);
+  const buscar = t => serie.find(p=>p.t===t && p.v!==null && p.v!==undefined);
+  const avisosComunes = [];
+  if(k.ultimo_dia){
+    const [yy, mm, dd] = k.ultimo_dia.split('-').map(Number);
+    if(dd < new Date(yy, mm, 0).getDate()) avisosComunes.push(`Dato parcial: el mes incluye datos hasta el ${dd}-${MESES_CORTOS[mm-1]}`);
+  }
+  function celdaHtml(etiqueta, valor, unidad, refTexto, avisos){
+    const ast = avisos.length ? `<span class="mom-aviso" title="${avisos.join('. ')}" aria-label="${avisos.join('. ')}">*</span>` : '';
+    const txt = valor === null ? '—' : fmtDelta.format(Math.round(valor*10)/10) + unidad;
+    const cls = valor === null ? 'flat' : colorVariacion(valor, esPrecio);
+    return `<div class="kv"><span class="kv-lab">${etiqueta}</span><span class="kv-val ${cls}">${txt}${ast}</span><span class="kv-ref">${refTexto}</span></div>`;
+  }
+  // Compara el ultimo dato con una base: en tasas, diferencia en p.p.; en absolutos, variacion en %
+  function celda(etiqueta, base, avisosExtra){
+    const avisos = avisosComunes.concat(avisosExtra || []);
+    if(!base) return celdaHtml(etiqueta, null, '', 'sin dato', avisos);
+    if(ult.v === 0 || base.v === 0) avisos.push('Posible dato no publicado (valor 0 en la fuente)');
+    let valor;
+    if(esInteranual) valor = ult.v - base.v;
+    else valor = base.v === 0 ? null : (ult.v - base.v) / Math.abs(base.v) * 100;
+    return celdaHtml(etiqueta, valor, esInteranual ? ' p.p.' : ' %', `vs ${base.t}`, avisos);
+  }
+  // Base: periodo anterior (si falta, el ultimo disponible, con aviso)
+  const tAnt = periodoAnterior(ult.t);
+  let ant = buscar(tAnt); const extraAnt = [];
+  if(!ant && serie.length > 1){ ant = serie[serie.length-2]; extraAnt.push(`No hay dato de ${tAnt}; se compara con ${ant.t}`); }
+  const dic = buscar(trimestral ? `${y-1}T4` : `${y-1}-12`);
+  const tIa = (y-1) + ult.t.slice(4);
+  if(esInteranual){
+    const tasa = celdaHtml('Tasa interanual', ult.v, ' %', `vs ${tIa}`, avisosComunes.slice());
+    const cAnt = celda(trimestral ? 'Cambio vs trim. ant.' : 'Cambio vs mes ant.', ant, extraAnt);
+    const cDic = celda(trimestral ? 'Cambio vs T4' : 'Cambio vs dic.', dic);
+    return `<div class="kpi-vars">${tasa}${cAnt}${cDic}</div>`;
+  }
+  const mensual = celda(trimestral ? 'Var. trimestral' : 'Var. mensual', ant, extraAnt);
+  const anual = celda('Var. anual', dic);
+  const interanual = celda('Var. interanual', buscar(tIa));
+  return `<div class="kpi-vars">${mensual}${anual}${interanual}</div>`;
+}
+
 // ---------- Funcion reutilizable para pintar tarjetas de KPIs en cualquier grid ----------
 const fmtNum = (v) => new Intl.NumberFormat('es-ES').format(v);
 function renderKpiCards(containerEl, items, idPrefix, showKey){
@@ -476,11 +537,8 @@ function renderKpiCards(containerEl, items, idPrefix, showKey){
       kpisHtml += `
         <div class="kpi-row">
           <p class="kpi-name">${k.nombre}</p>
-          <div class="kpi-line">
-            <span class="kpi-value">${lastDisplay}<span class="kpi-unit">${esInteranual?'% i.a.':k.unidad}</span></span>
-            ${badge}
-          </div>
-          <p class="kpi-period">Último dato: ${k.periodo} · ${evolucionHtml(k, esInteranual)}${k.nota? ' · '+k.nota:''}</p>
+          <p class="kpi-period">Último dato: ${k.periodo}${k.nota? ' · '+k.nota:''}</p>
+          ${variacionesHtml(k, esInteranual)}
           <div class="spark chart-wrap h-spark"><canvas id="${sparkId}"></canvas></div>
         </div>`;
     });
@@ -555,12 +613,12 @@ const filas = RESUMEN_KPIS.map(def=>{
   const tRef = mismoPeriodoAnioAnterior(ult.t);
   const ref = serie.find(p=>p.t===tRef);
   let refHtml = '<span class="mom flat">sin dato</span>', refDelta = null;
-  if(ref && ref.v !== null){
-    refDelta = esInteranual ? (ult.v - ref.v) : (ref.v ? (ult.v-ref.v)/Math.abs(ref.v)*100 : null);
-    if(refDelta !== null){
-      const r = Math.round(refDelta*10)/10;
-      refHtml = `<span class="mom ${claseFavorable(refDelta, esPrecio)}">${fmtDelta.format(r)}${esInteranual?' p.p.':' %'} vs ${tRef}</span>`;
-    }
+  // En KPIs que vienen como tasa interanual, la comparacion con el año anterior es la propia tasa (en %)
+  if(esInteranual) refDelta = ult.v;
+  else if(ref && ref.v !== null && ref.v) refDelta = (ult.v-ref.v)/Math.abs(ref.v)*100;
+  if(refDelta !== null){
+    const r = Math.round(refDelta*10)/10;
+    refHtml = `<span class="mom ${claseFavorable(refDelta, esPrecio)}">${fmtDelta.format(r)} % vs ${tRef}</span>`;
   }
   // Semaforo: numero de señales favorables (0 cuenta como no desfavorable)
   const fav = v => v === null ? null : claseFavorable(v, esPrecio) !== 'down';
@@ -569,10 +627,11 @@ const filas = RESUMEN_KPIS.map(def=>{
   const sem = nFav === señales.length ? 'verde' : (nFav === 0 ? 'rojo' : 'ambar');
   cuenta[sem]++;
   const semTxt = {verde:'Favorable', ambar:'Mixto', rojo:'Desfavorable'}[sem];
-  const valor = esInteranual ? `${fmt1.format(ult.v)}<small>% i.a.</small>` : `${fmtNum(ult.v)}<small>${k.unidad}</small>`;
+  // En tasas el valor ya aparece en "vs año anterior": aqui solo el periodo
+  const valor = esInteranual ? '' : `<div class="res-val">${fmtNum(ult.v)}<small>${k.unidad}</small></div>`;
   return `<tr>
     <td><div class="res-name">${def.etiqueta}</div><div class="res-bloque">${def.bloque}</div></td>
-    <td class="num"><div class="res-val">${valor}</div><div class="res-per">${ult.t}</div></td>
+    <td class="num">${valor}<div class="res-per">${ult.t}</div></td>
     <td class="num">${evoHtml}</td>
     <td class="num">${refHtml}</td>
     <td>${sparkSvg(serie)}</td>
